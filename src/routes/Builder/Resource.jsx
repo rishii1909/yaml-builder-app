@@ -1,8 +1,12 @@
 import React, { Component } from 'react'
 import { useState, useEffect } from 'react';
-import { Image, Input, Modal, ModalContent, ModalHeader, Table, TableCell, TableHeader, TableHeaderCell, TableRow, Button, Icon } from 'semantic-ui-react';
+import { Image, Input, Modal, ModalContent, ModalHeader, Table, TableCell, TableHeader, TableHeaderCell, TableRow, Button, Icon, Divider, Message, MessageHeader } from 'semantic-ui-react';
 import { resourceTypes } from '../../components/resourceTypes';
 import './Resource.css';
+
+var fileDownload = require('js-file-download');
+
+const YAML = require("json-to-pretty-yaml");
 
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -12,7 +16,7 @@ export const Resource = ({ resources, data, updateRegistry}) => {
 
     // const [data, setData] = useState();
     const [name, setName] = useState(data.name);
-    const [show, setShow] = useState(false)
+    const [error, setError] = useState(false)
 
 
     const [labels, setLabels] = useState([{
@@ -57,10 +61,6 @@ export const Resource = ({ resources, data, updateRegistry}) => {
     }
 
     resources[resourceData.id].returnData = returnData;
-
-
-
-    
     
     const handleNameChange = (value) => {
         setName(value);
@@ -91,6 +91,25 @@ export const Resource = ({ resources, data, updateRegistry}) => {
 
         console.log(containers);
     }
+
+    const downloadResource = () => {
+
+        const resource_object = {
+            apiVersion : "v1",
+            kind : "Pod",
+            metadata : {
+                name : name,
+                labels : labels
+            },
+            spec : {
+                containers : containers
+            }
+        }
+
+        const yaml_object = YAML.stringify(resource_object);
+
+        fileDownload(yaml_object, `${name}.yaml`)
+    } 
     
     return(
         
@@ -118,7 +137,7 @@ export const Resource = ({ resources, data, updateRegistry}) => {
                 <ModalContent >
                     <div className='modal-resource-wrapper' style={{backgroundImage : `linear-gradient(rgba(255,255,255,.8), rgba(255,255,255,.9)), url(${resourceTypes[resourceData.resource_type]?.icon})`}}>
 
-                        <Table>
+                        <Table className="root-table">
                             <TableHeader>
                                 <TableRow>
                                     <TableHeaderCell>
@@ -247,7 +266,7 @@ export const Resource = ({ resources, data, updateRegistry}) => {
                                                 Containers
                                             </TableCell>
                                             <TableCell>
-                                                <Table>
+                                                <Table> 
                                                     
                                                     <TableRow>
                                                         {containers.map((el, i) => 
@@ -277,13 +296,13 @@ export const Resource = ({ resources, data, updateRegistry}) => {
                                                                             const new_val = evt.target.value;
 
                                                                             let container = containers[i];
-                                                                            container.value = new_val;
+                                                                            container.image = new_val;
 
                                                                             setContainers(containers => Object.assign([], containers, {[i]: container}));
 
                                                                             
                                                                         }}
-                                                                        value={containers[i].value}
+                                                                        value={containers[i].image}
                                                                     >
                                                                         
                                                                     </Input>
@@ -309,6 +328,28 @@ export const Resource = ({ resources, data, updateRegistry}) => {
                             
                             
                         </Table>
+
+                        {error && 
+                            <Message negative>
+                                <MessageHeader>
+                                    Error
+                                </MessageHeader>
+                                {error}
+                            </Message>
+                        }
+
+                        <Divider></Divider>
+                        <Button
+                            icon
+                            labelPosition='left'
+                            floated='right'
+                            onClick={() => downloadResource()}
+                        >
+                            <Icon name='download' ></Icon>
+                            Download YAML
+                        </Button>
+                        <br/>
+                        <br/>
                     </div>
                 </ModalContent>
             </Modal>

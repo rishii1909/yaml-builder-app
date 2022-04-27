@@ -67,10 +67,10 @@ const Builder = () => {
                     <br />
                     <Menu inverted fluid vertical>
                         <FadeInMenuButton text="Pod" image={pod_image} />
+                        {/* <FadeInMenuButton text="Pod" image={pod_image} />
                         <FadeInMenuButton text="Pod" image={pod_image} />
                         <FadeInMenuButton text="Pod" image={pod_image} />
-                        <FadeInMenuButton text="Pod" image={pod_image} />
-                        <FadeInMenuButton text="Pod" image={pod_image} />
+                        <FadeInMenuButton text="Pod" image={pod_image} /> */}
                     </Menu>
                 </Segment>
             </div>
