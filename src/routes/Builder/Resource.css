@@ -1,0 +1,13 @@
+.resource-label input {
+    text-align: center !important;
+}
+
+.modal-resource-wrapper{
+    min-height: 50vh;
+    
+    width: 100%;
+    background-size: 36%;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+}
