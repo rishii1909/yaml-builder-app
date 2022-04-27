@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { useState, useEffect } from 'react';
-import { Image, Input, Modal, ModalContent, ModalHeader, Table, TableCell, TableHeader, TableHeaderCell, TableRow } from 'semantic-ui-react';
+import { Image, Input, Modal, ModalContent, ModalHeader, Table, TableCell, TableHeader, TableHeaderCell, TableRow, Button, Icon } from 'semantic-ui-react';
 import { resourceTypes } from '../../components/resourceTypes';
 import './Resource.css';
 
@@ -13,10 +13,18 @@ export const Resource = ({ resources, data, updateRegistry}) => {
     // const [data, setData] = useState();
     const [name, setName] = useState(data.name);
     const [show, setShow] = useState(false)
+
+
     const [labels, setLabels] = useState([{
-        name : "Name",
-        value : "Value"   
+        name : "",
+        value : ""   
     }])
+
+    const [containers, setContainers] = useState([{
+        name : "",
+        image : "",
+    }])
+
     const [resourceData, setResourceData] = useState({
         ...data,
         apiVersion : 'v1',
@@ -58,6 +66,30 @@ export const Resource = ({ resources, data, updateRegistry}) => {
         setName(value);
         resourceData.name = value;
         setResourceData(resourceData);
+    }
+
+    const addLabel = () => {
+
+        setLabels(labels => Object.assign([], labels, {
+            [labels.length] : {
+                name : "",
+                value : ""
+            }
+        }))
+
+        // console.log(labels);
+    }
+
+    const addContainer = () => {
+
+        setContainers(containers => Object.assign([], containers, {
+            [containers.length] : {
+                name : "",
+                image : ""
+            }
+        }))
+
+        console.log(containers);
     }
     
     return(
@@ -103,7 +135,7 @@ export const Resource = ({ resources, data, updateRegistry}) => {
                                     API Version
                                 </TableCell>
                                 <TableCell>
-                                    <Input fluid
+                                    <Input
                                         value={resourceData.apiVersion}
                                         disabled
                                     />
@@ -115,7 +147,7 @@ export const Resource = ({ resources, data, updateRegistry}) => {
                                     Kind
                                 </TableCell>
                                 <TableCell>
-                                    <Input fluid
+                                    <Input
                                         value={resourceData.kind}
                                         disabled
                                     />
@@ -130,43 +162,142 @@ export const Resource = ({ resources, data, updateRegistry}) => {
                                     <Table>
                                         <TableRow>
                                             <TableCell>
+                                                Name
+                                            </TableCell>
+                                            <TableCell>
+                                                <Input
+                                                    value={name}
+                                                    onChange={(evt) => setName(evt.target.value)}
+                                                >
+                                                </Input>
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>
                                                 Labels
                                             </TableCell>
                                             <TableCell>
                                                 <Table>
+                                                    
                                                     <TableRow>
                                                         {labels.map((el, i) => 
-                                                            <>
-                                                            <TableCell>
-                                                                <Input
-                                                                 onChange={(evt) => {
-                                                                    const new_name = evt.target.value;
-
-                                                                    let label = labels[i];
-                                                                    label.name = new_name;
-
-                                                                    console.log(label);
-                                                                    setLabels(labels => [...labels, label]);
-
-                                                                 }}
-                                                                 value={labels[i].name}
-                                                                >
-                                                                    
-                                                                </Input>
-                                                            </TableCell>   
-                                                            <TableCell>
-                                                                <Input
+                                                            <TableRow>
+                                                                <TableCell>
+                                                                    <Input
+                                                                    placeholder="Enter name"
                                                                     onChange={(evt) => {
-                                                                        resourceData.metadata.labels[i].name = evt.target.value;
-                                                                        setResourceData(resourceData);
-                                                                     }}
-                                                                    // value={resourceData.metadata.labels[i].value}
-                                                                >
-                                                                    
-                                                                </Input>
-                                                            </TableCell> 
-                                                            </>
+                                                                        const new_name = evt.target.value;
+
+                                                                        let label = labels[i];
+                                                                        label.name = new_name;
+
+
+                                                                        setLabels(labels => Object.assign([], labels, {[i]: label}));
+
+                                                                    }}
+                                                                    value={labels[i].name}
+                                                                    >
+                                                                        
+                                                                    </Input>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Input
+                                                                        placeholder="Enter value"
+                                                                        onChange={(evt) => {
+                                                                            const new_val = evt.target.value;
+
+                                                                            let label = labels[i];
+                                                                            label.value = new_val;
+
+                                                                            setLabels(labels => Object.assign([], labels, {[i]: label}));
+
+                                                                            
+                                                                        }}
+                                                                        value={labels[i].value}
+                                                                    >
+                                                                        
+                                                                    </Input>
+                                                                </TableCell> 
+                                                            </TableRow>
                                                         )}
+                                                    </TableRow>
+                                                    <TableRow>
+                                                        <TableCell>
+                                                        <Button primary icon labelPosition='left' floated='right' onClick={addLabel}>
+                                                            <Icon name="plus"></Icon>
+                                                            Add a new Label
+                                                        </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </Table>
+                                            </TableCell>
+                                        </TableRow>
+                                    </Table>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+
+                                <TableCell>
+                                    Specifications
+                                </TableCell>
+                                <TableCell>
+                                    <Table>
+                                        <TableRow>
+                                            <TableCell>
+                                                Containers
+                                            </TableCell>
+                                            <TableCell>
+                                                <Table>
+                                                    
+                                                    <TableRow>
+                                                        {containers.map((el, i) => 
+                                                            <TableRow>
+                                                                <TableCell>
+                                                                    <Input
+                                                                    placeholder="Container Name"
+                                                                    onChange={(evt) => {
+                                                                        const new_name = evt.target.value;
+
+                                                                        let container = containers[i];
+                                                                        container.name = new_name;
+
+
+                                                                        setContainers(containers => Object.assign([], containers, {[i]: container}));
+
+                                                                    }}
+                                                                    value={containers[i].name}
+                                                                    >
+                                                                        
+                                                                    </Input>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Input
+                                                                        placeholder="Container Image"
+                                                                        onChange={(evt) => {
+                                                                            const new_val = evt.target.value;
+
+                                                                            let container = containers[i];
+                                                                            container.value = new_val;
+
+                                                                            setContainers(containers => Object.assign([], containers, {[i]: container}));
+
+                                                                            
+                                                                        }}
+                                                                        value={containers[i].value}
+                                                                    >
+                                                                        
+                                                                    </Input>
+                                                                </TableCell> 
+                                                            </TableRow>
+                                                        )}
+                                                    </TableRow>
+                                                    <TableRow>
+                                                        <TableCell>
+                                                        <Button primary icon labelPosition='left' floated='right' onClick={addContainer}>
+                                                            <Icon name="plus"></Icon>
+                                                            Add a new container
+                                                        </Button>
+                                                        </TableCell>
                                                     </TableRow>
                                                 </Table>
                                             </TableCell>
@@ -175,17 +306,7 @@ export const Resource = ({ resources, data, updateRegistry}) => {
                                 </TableCell>
                             </TableRow>
 
-                            <TableRow>
-                                <TableCell>
-                                    API Version
-                                </TableCell>
-                                <TableCell>
-                                    <Input fluid
-                                        value={resourceData.apiVersion}
-                                        disabled
-                                    />
-                                </TableCell>
-                            </TableRow>
+                            
                             
                         </Table>
                     </div>
